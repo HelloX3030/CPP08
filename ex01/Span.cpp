@@ -58,8 +58,25 @@ void Span::addNumber(int number)
 
 std::string Span::to_string() const
 {
+    std::ostringstream oss_addr;
+    oss_addr << std::hex << reinterpret_cast<std::uintptr_t>(_data);
+    const std::string addr_hex = oss_addr.str();
+
     std::string result;
-    for (size_t i = 0; i < _size; ++i)
-        result += std::to_string(_data[i]) + " ";
+    result.reserve(64 + _size * 4); // assumption: reduce reallocations
+
+    result += "Span: (n: ";
+    result += std::to_string(_n);
+    result += ", size: ";
+    result += std::to_string(_size);
+    result += ", _data: 0x";
+    result += addr_hex;
+    result += ") ";
+
+    for (size_t i = 0; i < _size; ++i) {
+        result += std::to_string(_data[i]);
+        result += ' ';
+    }
+
     return result;
 }

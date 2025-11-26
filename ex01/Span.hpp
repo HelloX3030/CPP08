@@ -1,11 +1,15 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdexcept>
+#include <iostream>
+#include <string>
 
 class Span
 {
     private:
         size_t _n;
+        size_t _size;
         int* _data;
 
     public:
@@ -16,4 +20,6 @@ class Span
 
         // Special Constructor
         Span(size_t n);
+        void addNumber(int number);
+        std::string to_string() const;
 };

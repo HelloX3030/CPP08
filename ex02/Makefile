@@ -10,10 +10,10 @@ vpath %.hpp include/
 vpath %.cpp src/
 
 # .h and .hpp files
-H_FILES := Span.hpp
+H_FILES := MutantStack.hpp
 
 # .cpp source files
-SRC_FILES := main.cpp Span.cpp
+SRC_FILES := main.cpp
 
 # Object directory and object files
 OBJ_DIR := obj

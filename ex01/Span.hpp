@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <limits>
 
 class Span
 {
@@ -22,5 +23,7 @@ class Span
         // Special Constructor
         Span(size_t n);
         void addNumber(int number);
-        std::string to_string() const;
+        std::string to_string(bool spanInfo = false) const;
+        int shortestSpan() const;
+        int longestSpan() const;
 };

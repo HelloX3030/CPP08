@@ -56,14 +56,15 @@ void Span::addNumber(int number)
         throw std::out_of_range("Span is already full");
 }
 
-std::string Span::to_string() const
+std::string Span::to_string(bool spanInfo) const
 {
     std::ostringstream oss_addr;
     oss_addr << std::hex << reinterpret_cast<std::uintptr_t>(_data);
     const std::string addr_hex = oss_addr.str();
 
     std::string result;
-    result.reserve(64 + _size * 4); // assumption: reduce reallocations
+    size_t len = 64 + _size * 4 + (spanInfo ? 32 : 0); // Approximate reservation for efficiency
+    result.reserve(len); 
 
     result += "Span: (n: ";
     result += std::to_string(_n);
@@ -71,6 +72,12 @@ std::string Span::to_string() const
     result += std::to_string(_size);
     result += ", _data: 0x";
     result += addr_hex;
+
+    if (spanInfo)
+    {
+        result += " Shortest Span: " + std::to_string(shortestSpan()) + " ";
+        result += "Longest Span: " + std::to_string(longestSpan());
+    }
     result += ") ";
 
     for (size_t i = 0; i < _size; ++i) {
@@ -79,4 +86,48 @@ std::string Span::to_string() const
     }
 
     return result;
+}
+
+int Span::shortestSpan() const
+{
+    if (_size < 2)
+        throw std::logic_error("Not enough elements to find a span");
+
+    int *tmp = new int[_size];
+    for (size_t i = 0; i < _size; ++i)
+        tmp[i] = _data[i];
+    
+    // Bubble sort
+    for (size_t i = 0; i < _size - 1; ++i)
+        for (size_t j = i + 1; j < _size; ++j)
+            if (tmp[i] > tmp[j])
+                std::swap(tmp[i], tmp[j]);
+
+    int shortest = std::numeric_limits<int>::max();
+    for (size_t i = 1; i < _size; ++i)
+    {
+        int diff = tmp[i] - tmp[i - 1];
+        if (diff < shortest)
+            shortest = diff;
+    }
+
+    delete[] tmp;
+    return shortest;
+}
+
+int Span::longestSpan() const
+{
+    if (_size < 2)
+        throw std::logic_error("Not enough elements to find a span");
+    
+    int min = std::numeric_limits<int>::max();
+    int max = std::numeric_limits<int>::min();
+    for (size_t i = 0; i < _size; ++i)
+    {
+        if (min > _data[i])
+            min = _data[i];
+        if (max < _data[i])
+            max = _data[i];
+    }
+    return std::abs(max - min);
 }

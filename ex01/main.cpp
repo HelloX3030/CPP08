@@ -38,10 +38,22 @@ int main(void)
     std::cout << s3.to_string() << std::endl;
 
     // Spans
-    std::cout << "----------------------------------------" << std::endl;
-    Span s(10);
-    for (int i = 0; i < 10; ++i)
-        s.addNumber(i);
-    std::cout << s.to_string() << std::endl;
+    {
+        std::cout << "----------------------------------------" << std::endl;
+        std:: cout << "Shortest Span vs Longest Span" << std::endl;
+        Span s(10);
+        for (int i = 0; i < 10; ++i)
+            s.addNumber(5 + (i + 2) * i);
+        std::cout << s.to_string(true) << std::endl;
+    }
+
+    {
+        std::cout << "----------------------------------------" << std::endl;
+        std:: cout << "Shortest Span vs Longest Span with negative numbers" << std::endl;
+        Span s(10);
+        for (int i = 0; i < 10; ++i)
+            s.addNumber(-50 + i * i);
+        std::cout << s.to_string(true) << std::endl;
+    }
     return (0);
 }

@@ -27,3 +27,10 @@ class Span
         int shortestSpan() const;
         int longestSpan() const;
 };
+
+template <typename InputIt>
+void add_range(Span &span, InputIt begin, InputIt end)
+{
+    for (InputIt it = begin; it != end; ++it)
+        span.addNumber(*it);
+}

@@ -56,14 +56,14 @@ void Span::addNumber(int number)
         throw std::out_of_range("Span is already full");
 }
 
-std::string Span::to_string(bool spanInfo) const
+std::string Span::to_string(bool dataInfo, bool spanInfo) const
 {
     std::ostringstream oss_addr;
     oss_addr << std::hex << reinterpret_cast<std::uintptr_t>(_data);
     const std::string addr_hex = oss_addr.str();
 
     std::string result;
-    size_t len = 64 + _size * 4 + (spanInfo ? 32 : 0); // Approximate reservation for efficiency
+    size_t len = 64 + (dataInfo ? _size * 4 : 0) + (spanInfo ? 32 : 0); // Approximate reservation for efficiency
     result.reserve(len); 
 
     result += "Span: (n: ";
@@ -80,11 +80,13 @@ std::string Span::to_string(bool spanInfo) const
     }
     result += ") ";
 
-    for (size_t i = 0; i < _size; ++i) {
-        result += std::to_string(_data[i]);
-        result += ' ';
+    if (dataInfo)
+    {
+        for (size_t i = 0; i < _size; ++i) {
+            result += std::to_string(_data[i]);
+            result += ' ';
+        }
     }
-
     return result;
 }
 

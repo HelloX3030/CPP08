@@ -55,5 +55,26 @@ int main(void)
             s.addNumber(-50 + i * i);
         std::cout << s.to_string(true) << std::endl;
     }
+
+    {
+        std::cout << "----------------------------------------" << std::endl;
+        std::cout << "Large test according to subject" << std::endl;
+        Span s(10000);
+        for (int i = 0; i < 10000; ++i)
+            s.addNumber(i * 2 - 100);
+        std::cout << s.to_string(false, true) << std::endl;
+    }
+    {
+        std::cout << "----------------------------------------" << std::endl;
+        std::cout << "Subject Test" << std::endl;
+        Span sp = Span(5);
+        sp.addNumber(6);
+        sp.addNumber(3);
+        sp.addNumber(17);
+        sp.addNumber(9);
+        sp.addNumber(11);
+        std::cout << sp.shortestSpan() << std::endl;
+        std::cout << sp.longestSpan() << std::endl;
+    }
     return (0);
 }

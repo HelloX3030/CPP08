@@ -10,7 +10,7 @@ vpath %.hpp include/
 vpath %.cpp src/
 
 # .h and .hpp files
-H_FILES := whatever.hpp
+H_FILES := easyfind.hpp
 
 # .cpp source files
 SRC_FILES := main.cpp

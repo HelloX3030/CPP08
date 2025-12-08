@@ -6,13 +6,16 @@
 #include <string>
 #include <sstream>
 #include <limits>
+#include <vector>
+#include <algorithm>
+#include <numeric>
 
 class Span
 {
     private:
         size_t _n;
         size_t _size;
-        int* _data;
+        std::vector<int> _data;
 
     public:
         Span();

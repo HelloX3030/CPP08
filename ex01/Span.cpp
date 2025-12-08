@@ -1,19 +1,14 @@
 #include "Span.hpp"
 
 Span::Span()
-    : _n(0),  _size(0), _data(nullptr)
+    : _n(0),  _size(0), _data()
 {
 }
 
 Span::Span(const Span& other)
-    : _n(other._n), _size(other._size), _data(nullptr)
+    : _n(other._n), _size(other._size), _data(other._data)
 {
-    if (other._data)
-    {
-        _data = new int[_n];
-        for (size_t i = 0; i < _n; ++i)
-            _data[i] = other._data[i];
-    }
+
 }
 
 Span& Span::operator=(const Span& other)
@@ -22,27 +17,20 @@ Span& Span::operator=(const Span& other)
     {
         _n = other._n;
         _size = other._size;
-        delete[] _data;
-        if (other._data)
-        {
-            _data = new int[_n];
-            for (size_t i = 0; i < _n; ++i)
-                _data[i] = other._data[i];
-        }
-        else
-            _data = nullptr;
+        _data = other._data;
     }
     return *this;
 }
 
 Span::~Span()
 {
-    delete[] _data;
+
 }
 
 Span::Span(size_t n)
-    : _n(n), _size(0), _data(new int[n])
+    : _n(n), _size(0), _data()
 {
+    _data.resize(n);
 }
 
 void Span::addNumber(int number)
@@ -58,10 +46,6 @@ void Span::addNumber(int number)
 
 std::string Span::to_string(bool dataInfo, bool spanInfo) const
 {
-    std::ostringstream oss_addr;
-    oss_addr << std::hex << reinterpret_cast<std::uintptr_t>(_data);
-    const std::string addr_hex = oss_addr.str();
-
     std::string result;
     size_t len = 64 + (dataInfo ? _size * 4 : 0) + (spanInfo ? 32 : 0); // Approximate reservation for efficiency
     result.reserve(len); 
@@ -70,8 +54,6 @@ std::string Span::to_string(bool dataInfo, bool spanInfo) const
     result += std::to_string(_n);
     result += ", size: ";
     result += std::to_string(_size);
-    result += ", _data: 0x";
-    result += addr_hex;
 
     if (spanInfo)
     {
@@ -95,25 +77,11 @@ int Span::shortestSpan() const
     if (_size < 2)
         throw std::logic_error("Not enough elements to find a span");
 
-    int *tmp = new int[_size];
-    for (size_t i = 0; i < _size; ++i)
-        tmp[i] = _data[i];
-    
-    // Bubble sort
-    for (size_t i = 0; i < _size - 1; ++i)
-        for (size_t j = i + 1; j < _size; ++j)
-            if (tmp[i] > tmp[j])
-                std::swap(tmp[i], tmp[j]);
-
-    int shortest = std::numeric_limits<int>::max();
-    for (size_t i = 1; i < _size; ++i)
-    {
-        int diff = tmp[i] - tmp[i - 1];
-        if (diff < shortest)
-            shortest = diff;
-    }
-
-    delete[] tmp;
+    std::vector<int> tmp(_data.begin(), _data.begin() + _size);
+    std::sort(tmp.begin(), tmp.end());
+    std::vector<int> diffs(tmp.size());
+    std::adjacent_difference(tmp.begin(), tmp.end(), diffs.begin());
+    int shortest = *std::min_element(diffs.begin() + 1, diffs.end());
     return shortest;
 }
 
@@ -121,15 +89,7 @@ int Span::longestSpan() const
 {
     if (_size < 2)
         throw std::logic_error("Not enough elements to find a span");
-    
-    int min = std::numeric_limits<int>::max();
-    int max = std::numeric_limits<int>::min();
-    for (size_t i = 0; i < _size; ++i)
-    {
-        if (min > _data[i])
-            min = _data[i];
-        if (max < _data[i])
-            max = _data[i];
-    }
-    return std::abs(max - min);
+
+    auto [min_it, max_it] = std::minmax_element(_data.begin(), _data.begin() + _size);
+    return std::abs(*max_it - *min_it);
 }

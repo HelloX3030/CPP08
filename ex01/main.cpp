@@ -12,10 +12,11 @@ int main(void)
     std::cout << "Test adding more numbers than the span can hold" << std::endl;
     try
     {
-        Span s(10);
-        for (int i = 0; i < 11; ++i)
+        Span s(5);
+        for (int i = 0; i < 11; ++i) {
             s.addNumber(i);
-        std::cout << s.to_string() << std::endl;
+            std::cout << s.to_string() << std::endl;
+        }
     }
     catch(const std::exception& e)
     {
@@ -28,6 +29,9 @@ int main(void)
     for (int i = 0; i < 5; ++i)
         s1.addNumber(i);
     Span s2 = s1;
+    std::cout << s1.to_string() << std::endl;
+    std::cout << s2.to_string() << std::endl;
+    std::cout << "Adding number to new Span" << std::endl;
     s2.addNumber(11);
     std::cout << s1.to_string() << std::endl;
     std::cout << s2.to_string() << std::endl;
@@ -35,6 +39,9 @@ int main(void)
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Test Copy Constructor" << std::endl;
     Span s3(s2);
+    std::cout << s2.to_string() << std::endl;
+    std::cout << s3.to_string() << std::endl;
+    std::cout << "Adding number to new Span" << std::endl;
     s3.addNumber(12);
     std::cout << s2.to_string() << std::endl;
     std::cout << s3.to_string() << std::endl;
@@ -79,14 +86,28 @@ int main(void)
         std::cout << sp.longestSpan() << std::endl;
     }
     {
-        Span sp(10);
-        std::vector<int> vec = {5, 3, 9, 1};
-        add_range(sp, vec.begin(), vec.end());
-        std::list<int> lst = {7, 2};
-        add_range(sp, lst.begin(), lst.end());
-        int arr[] = {10, 6};
-        add_range(sp, arr, arr + 2);
+        std::cout << "----------------------------------------" << std::endl;
+        std::cout << "Test addRange with different container types" << std::endl;
         try {
+            Span sp(5000);
+            std::vector<int> vec = {5, 3, 9, 1};
+            std::cout << "Adding vector: ";
+            for (size_t i = 0; i < vec.size(); ++i)
+                std::cout << vec[i] << " ";
+            std::cout << std::endl;
+            sp.addRange(vec.begin(), vec.end());
+            std::list<int> lst = {7, 2};
+            std::cout << "Adding list: ";
+            for (std::list<int>::iterator it = lst.begin(); it != lst.end(); ++it)
+                std::cout << *it << " ";
+            std::cout << std::endl;
+            sp.addRange(lst.begin(), lst.end());
+            int arr[] = {10, 6};
+            std::cout << "Adding array: ";
+            for (size_t i = 0; i < sizeof(arr)/sizeof(arr[0]); ++i)
+                std::cout << arr[i] << " ";
+            std::cout << std::endl;
+            sp.addRange(arr, arr + 2);
             std::cout << sp.to_string(true, true) << std::endl;
         } catch (const std::exception &e) {
             std::cerr << "Error: " << e.what() << std::endl;

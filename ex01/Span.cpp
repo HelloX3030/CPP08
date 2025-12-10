@@ -1,12 +1,12 @@
 #include "Span.hpp"
 
 Span::Span()
-    : _n(0),  _size(0), _data()
+    : _n(0), _data()
 {
 }
 
 Span::Span(const Span& other)
-    : _n(other._n), _size(other._size), _data(other._data)
+    : _n(other._n), _data(other._data)
 {
 
 }
@@ -16,7 +16,6 @@ Span& Span::operator=(const Span& other)
     if (this != &other)
     {
         _n = other._n;
-        _size = other._size;
         _data = other._data;
     }
     return *this;
@@ -28,18 +27,15 @@ Span::~Span()
 }
 
 Span::Span(size_t n)
-    : _n(n), _size(0), _data()
+    : _n(n), _data()
 {
-    _data.resize(n);
+    _data.reserve(n);
 }
 
 void Span::addNumber(int number)
 {
-    if (_size < _n)
-    {
-        _data[_size] = number;
-        ++_size;
-    }
+    if (_data.size() < _n)
+        _data.push_back(number);
     else
         throw std::out_of_range("Span is already full");
 }
@@ -47,24 +43,35 @@ void Span::addNumber(int number)
 std::string Span::to_string(bool dataInfo, bool spanInfo) const
 {
     std::string result;
-    size_t len = 64 + (dataInfo ? _size * 4 : 0) + (spanInfo ? 32 : 0); // Approximate reservation for efficiency
-    result.reserve(len); 
 
     result += "Span: (n: ";
     result += std::to_string(_n);
     result += ", size: ";
-    result += std::to_string(_size);
+    result += std::to_string(_data.size());
 
     if (spanInfo)
     {
-        result += " Shortest Span: " + std::to_string(shortestSpan()) + " ";
-        result += "Longest Span: " + std::to_string(longestSpan());
+        std::string shortestSpanStr;
+        try {
+            shortestSpanStr = std::to_string(shortestSpan());            
+        } catch (const std::exception& e) {
+            shortestSpanStr = "N/A";
+        }
+        result += ", Shortest Span: " + shortestSpanStr + ", ";
+        std::string longestSpanStr;
+        try {
+            longestSpanStr = std::to_string(longestSpan());
+        } catch (const std::exception& e) {
+            longestSpanStr = "N/A";
+        }
+        result += "Longest Span: " + longestSpanStr;
     }
     result += ") ";
 
     if (dataInfo)
     {
-        for (size_t i = 0; i < _size; ++i) {
+        result += "Data: ";
+        for (size_t i = 0; i < _data.size(); ++i) {
             result += std::to_string(_data[i]);
             result += ' ';
         }
@@ -74,10 +81,10 @@ std::string Span::to_string(bool dataInfo, bool spanInfo) const
 
 int Span::shortestSpan() const
 {
-    if (_size < 2)
+    if (_data.size() < 2)
         throw std::logic_error("Not enough elements to find a span");
 
-    std::vector<int> tmp(_data.begin(), _data.begin() + _size);
+    std::vector<int> tmp(_data.begin(), _data.end());
     std::sort(tmp.begin(), tmp.end());
     std::vector<int> diffs(tmp.size());
     std::adjacent_difference(tmp.begin(), tmp.end(), diffs.begin());
@@ -87,9 +94,9 @@ int Span::shortestSpan() const
 
 int Span::longestSpan() const
 {
-    if (_size < 2)
+    if (_data.size() < 2)
         throw std::logic_error("Not enough elements to find a span");
 
-    auto [min_it, max_it] = std::minmax_element(_data.begin(), _data.begin() + _size);
+    auto [min_it, max_it] = std::minmax_element(_data.begin(), _data.end());
     return std::abs(*max_it - *min_it);
 }
